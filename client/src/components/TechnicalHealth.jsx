@@ -1,13 +1,13 @@
 import React from 'react'
 
-const metrics = [
-  { icon: 'payments', label: 'Current Price', value: '₹3,002.15', iconColor: '#c3f5ff' },
-  { icon: 'auto_awesome', label: 'Predicted', value: '₹3,142.50', iconColor: '#e9b3ff' },
-  { icon: 'speed', label: 'Volatility', value: 'Low', iconColor: '#00e38b' },
-  { icon: 'bar_chart', label: 'Volume (24h)', value: '12.4M', iconColor: '#9cf0ff' },
-]
+export default function TechnicalHealth({ rsi = { value: 64.2, percentage: 64 }, macd = 'Bullish', sma = '₹2,955.00', metricsData }) {
+  const displayMetrics = metricsData || [
+    { icon: 'payments', label: 'Current Price', value: '₹3,002.15', iconColor: '#c3f5ff' },
+    { icon: 'auto_awesome', label: 'Predicted', value: '₹3,142.50', iconColor: '#e9b3ff' },
+    { icon: 'speed', label: 'Volatility', value: 'Low', iconColor: '#00e38b' },
+    { icon: 'bar_chart', label: 'Volume (24h)', value: '12.4M', iconColor: '#9cf0ff' },
+  ];
 
-export default function TechnicalHealth() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Technical Indicators */}
@@ -24,10 +24,10 @@ export default function TechnicalHealth() {
               <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#bac9cc' }}>
                 Relative Strength Index (RSI)
               </span>
-              <span style={{ fontSize: '14px', fontWeight: 900, color: '#00e38b' }}>64.2</span>
+              <span style={{ fontSize: '14px', fontWeight: 900, color: '#00e38b' }}>{rsi.value}</span>
             </div>
             <div style={{ height: '6px', width: '100%', borderRadius: '9999px', overflow: 'hidden', background: '#313540' }}>
-              <div style={{ height: '100%', width: '64%', borderRadius: '9999px', background: 'linear-gradient(to right, #c3f5ff, #16ff9e)', boxShadow: '0 0 8px rgba(0,229,255,0.4)' }} />
+              <div style={{ height: '100%', width: `${rsi.percentage}%`, borderRadius: '9999px', background: 'linear-gradient(to right, #c3f5ff, #16ff9e)', boxShadow: '0 0 8px rgba(0,229,255,0.4)' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
               <span style={{ fontSize: '10px', color: '#bac9cc' }}>30 (Oversold)</span>
@@ -41,7 +41,7 @@ export default function TechnicalHealth() {
               <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#bac9cc' }}>
                 MACD Signal
               </span>
-              <span style={{ fontSize: '14px', fontWeight: 900, color: '#c3f5ff' }}>Bullish</span>
+              <span style={{ fontSize: '14px', fontWeight: 900, color: '#c3f5ff' }}>{macd}</span>
             </div>
             <div style={{ height: '6px', width: '100%', borderRadius: '9999px', overflow: 'hidden', background: '#313540' }}>
               <div style={{ height: '100%', width: '72%', borderRadius: '9999px', background: 'linear-gradient(to right, #00daf3, #c3f5ff)', boxShadow: '0 0 8px rgba(0,229,255,0.4)' }} />
@@ -54,7 +54,7 @@ export default function TechnicalHealth() {
               <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#bac9cc' }}>
                 20D Moving Average
               </span>
-              <span style={{ fontSize: '14px', fontWeight: 900, color: '#00e5ff' }}>₹2,955.00</span>
+              <span style={{ fontSize: '14px', fontWeight: 900, color: '#00e5ff' }}>{sma}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', height: '32px' }}>
               {[20, 30, 15, 25, 35, 25, 20].map((h, i) => (
@@ -76,7 +76,7 @@ export default function TechnicalHealth() {
 
       {/* Key Metrics Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-        {metrics.map(m => (
+        {displayMetrics.map(m => (
           <div
             key={m.label}
             style={{

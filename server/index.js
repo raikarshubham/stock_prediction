@@ -23,6 +23,10 @@ app.post('/api/predict', async (req, res) => {
         res.json(response.data);
     } catch (error) {
         console.error('Error calling Flask ML bridge:', error.message);
+        // If Flask throws a specific error (like invalid ticker), pass it forward
+        if (error.response && error.response.data && error.response.data.error) {
+            return res.status(400).json({ error: error.response.data.error });
+        }
         res.status(500).json({ error: 'Failed to get prediction from ML model' });
     }
 });

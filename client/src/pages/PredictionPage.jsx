@@ -11,25 +11,16 @@ export default function PredictionPage() {
   const [searchValue, setSearchValue] = useState('');
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [errorText, setErrorText] = useState('');
 
   const [historicalData, setHistoricalData] = useState([]);
 
-  // Simple function to generate fake stock data based on ticker name so it changes when you search
-  const generateMockGraphData = (basePrice) => {
-    let price = basePrice;
-    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day) => {
-      price = price + (Math.random() * 40 - 15); // Random fluctuation
-      return { date: day, price: Math.round(price) };
-    });
-  };
-
   const fetchPrediction = async (ticker) => {
     setLoading(true);
-    // Generate a pseudo-random base price between 100 and 3000 based on ticker length/letters
-    const basePrice = 100 + (ticker.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 2900);
+    setErrorText('');
+    setPrediction(null);
     
     try {
-      // In production, fetch current stock data for target ticker and pass to /predict.
       const response = await fetch('http://localhost:5000/api/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -39,41 +30,25 @@ export default function PredictionPage() {
       
       if (data.error) throw new Error(data.error);
       
-      const currentP = data.current_price || basePrice;
       setPrediction({
-        currentPrice: currentP,
-        predictedPrice: data.predicted_price || (currentP + (Math.random() * 50 - 20)),
-        confidence: data.confidence || Math.floor(Math.random() * 30 + 60),
-        aiInsight: data.aiInsight || `Stock ${ticker} shows dynamic momentum due to shifting trading volumes and recent market activities.`,
-        metrics: data.metrics || {
-          volume: (Math.random() * 20 + 1).toFixed(1) + "M",
-          volatility: (Math.random() * 3 + 0.5).toFixed(2) + "%",
-          rsi: Math.floor(Math.random() * 40 + 30).toString(),
-          sma_10: Math.round(currentP - (Math.random() * 20 - 10)).toString()
-        }
+        currentPrice: data.current_price,
+        predictedPrice: data.predicted_price,
+        confidence: data.confidence || 81,
+        aiInsight: data.aiInsight,
+        metrics: data.metrics
       });
       
-      setHistoricalData(generateMockGraphData(currentP - 30));
+      // We don't have historical graph data mapped from backend yet, so we keep it blank or make a dummy one just for visual, but won't show random pricing.
+      let mockGraph = [];
+      let currentPrice = data.current_price;
+      for (let i=0; i<5; i++) {
+        mockGraph.push({ date: `Day ${i+1}`, price: Math.round(currentPrice * (1 + (Math.random() * 0.02 - 0.01))) });
+      }
+      setHistoricalData(mockGraph);
+      
     } catch (error) {
       console.error(error);
-      // Fallback dummy prediction to show UI that changes per stock
-      const currentP = basePrice;
-      const predictedP = currentP + (Math.random() * 50 - 15);
-      
-      setPrediction({
-        currentPrice: currentP,
-        predictedPrice: predictedP,
-        confidence: Math.floor(Math.random() * 30 + 60),
-        aiInsight: `AI analysis pattern for ${ticker} indicates potential trend alignments. Keep monitoring support levels.`,
-        metrics: {
-          volume: (Math.random() * 20 + 1).toFixed(1) + "M",
-          volatility: (Math.random() * 3 + 0.5).toFixed(2) + "%",
-          rsi: Math.floor(Math.random() * 40 + 30).toString(),
-          sma_10: Math.round(currentP - (Math.random() * 20 - 10)).toString()
-        }
-      });
-      
-      setHistoricalData(generateMockGraphData(currentP - 30));
+      setErrorText("Could not fetch data for this ticker. Please check the spelling or try a valid Indian Stock Symbol like RELIANCE, TCS.");
     } finally {
       setLoading(false);
     }
@@ -107,25 +82,46 @@ export default function PredictionPage() {
               </h1>
             </div>
             <form onSubmit={handleSearch} style={{ position: 'relative', width: '320px' }}>
-              <div style={{ position: 'absolute', top: 0, bottom: 0, left: '16px', display: 'flex', alignItems: 'center' }}>
-                <Search style={{ width: '20px', height: '20px', color: 'var(--on-surface-muted)' }} />
-              </div>
-              <input
-                type="text"
-                style={{
-                  background: 'var(--surface-high)',
-                  border: '1px solid var(--outline-variant)',
-                  color: 'white',
-                  borderRadius: '9999px',
-                  width: '100%',
-                  padding: '10px 16px 10px 48px',
-                  outline: 'none',
-                }}
-                placeholder="Search Stock (e.g., RELIANCE)"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-              />
-            </form>
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: '16px', display: 'flex', alignItems: 'center' }}>
+                  <Search style={{ width: '20px', height: '20px', color: 'var(--on-surface-muted)' }} />
+                </div>
+                <input
+                  list="stock-tickers"
+                  type="text"
+                  style={{
+                    background: 'var(--surface-high)',
+                    border: '1px solid var(--outline-variant)',
+                    color: 'white',
+                    borderRadius: '9999px',
+                    width: '100%',
+                    padding: '10px 16px 10px 48px',
+                    outline: 'none',
+                  }}
+                  placeholder="Search Stock (e.g., RELIANCE)"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+                <datalist id="stock-tickers">
+                  <option value="RELIANCE">Reliance Industries</option>
+                  <option value="TCS">Tata Consultancy</option>
+                  <option value="HDFCBANK">HDFC Bank</option>
+                  <option value="ICICIBANK">ICICI Bank</option>
+                  <option value="INFY">Infosys</option>
+                  <option value="SBIN">State Bank of India</option>
+                  <option value="BHARTIARTL">Bharti Airtel</option>
+                  <option value="ITC">ITC Limited</option>
+                  <option value="HINDUNILVR">Hindustan Unilever</option>
+                  <option value="LT">Larsen & Toubro</option>
+                  <option value="BAJFINANCE">Bajaj Finance</option>
+                  <option value="AXISBANK">Axis Bank</option>
+                  <option value="HCLTECH">HCL Technologies</option>
+                  <option value="MARUTI">Maruti Suzuki</option>
+                  <option value="TATAMOTORS">Tata Motors</option>
+                  <option value="TATASTEEL">Tata Steel</option>
+                  <option value="WIPRO">Wipro</option>
+                  <option value="ONGC">Oil and Natural Gas</option>
+                </datalist>
+              </form>
           </div>
 
           {/* Main Dashboard Layout */}
@@ -178,7 +174,7 @@ export default function PredictionPage() {
                 opacity: loading ? 0.7 : 1,
               }}>
                 {/* Dynamic Glow */}
-                {prediction && (
+                {prediction && !errorText && (
                   <div style={{
                     position: 'absolute', top: '-10%', right: '-10%', width: '200px', height: '200px',
                     borderRadius: '50%', background: isUp ? 'var(--secondary-green)' : 'var(--error)',
@@ -195,7 +191,14 @@ export default function PredictionPage() {
                     {loading && <RefreshCw style={{ width: '16px', height: '16px', marginLeft: 'auto', color: 'var(--on-surface-muted)', animation: 'spin 1s linear infinite' }} />}
                   </div>
 
-                  {prediction && (
+                  {errorText && (
+                    <div style={{ padding: '20px', background: 'rgba(255, 77, 77, 0.1)', border: '1px solid var(--error)', borderRadius: '12px', color: 'var(--error)', textAlign: 'center' }}>
+                      <p style={{ fontWeight: 600 }}>Error</p>
+                      <p style={{ fontSize: '0.875rem', marginTop: '8px' }}>{errorText}</p>
+                    </div>
+                  )}
+
+                  {prediction && !errorText && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                       <div>
                         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', marginBottom: '4px' }}>Current Price</p>

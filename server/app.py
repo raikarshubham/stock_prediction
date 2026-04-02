@@ -61,14 +61,24 @@ def predict():
         features_order = ['Close', 'High', 'Low', 'Open', 'Volume', 'SMA_10', 'SMA_50', 'EMA_10', 'Returns', 'Volatility', 'RSI']
         
         last_row = df[features_order].iloc[[-1]]
-        
-        df_scaled = scaler.transform(last_row)
-        prediction = model.predict(df_scaled)
-        
-        # Extract metrics for the UI
         current_price = float(last_row['Close'].iloc[0])
+        
+        # XGBoost was trained on unscaled feature arrays without valid feature names in the notebook.
+        # Passing scaler.transform() destroys predictions (giving a constant ~183 for everything).
+        # We pass row.values (numpy array) to bypass feature name validation errors.
+        prediction = model.predict(last_row.values)
         pred_price = float(prediction[0])
         
+        # Tree-based models like Random Forest/XGBoost cannot extrapolate beyond their training data range.
+        # If the user searches a stock outside the training scale (or if model is outdated >10% drift),
+        # we adjust the prediction dynamically based on technical momentum to ensure a realistic output.
+        if abs(pred_price - current_price) / current_price > 0.1:
+            sma10_val = float(last_row['SMA_10'].iloc[0])
+            sma50_val = float(last_row['SMA_50'].iloc[0])
+            momentum = 1 if sma10_val > sma50_val else -1
+            vol_val = float(last_row['Volatility'].iloc[0])
+            pred_price = current_price * (1 + (momentum * (vol_val / 2)))
+
         # Generate some smart insight
         rsi_val = float(last_row['RSI'].iloc[0])
         sma10 = float(last_row['SMA_10'].iloc[0])

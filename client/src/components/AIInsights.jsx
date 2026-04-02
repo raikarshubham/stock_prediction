@@ -1,6 +1,10 @@
 import React from 'react'
 
-export default function AIInsights() {
+export default function AIInsights({ 
+  insightText = "Model predicts bullish trend due to increasing RSI (64.2) and strong volume breakout over the 20-day moving average.",
+  suggestedEntry = "₹2,990.00",
+  stopLoss = "₹2,940.00"
+}) {
   return (
     <div
       className="glass"
@@ -61,9 +65,7 @@ export default function AIInsights() {
           }}
         >
           <p style={{ fontSize: '14px', lineHeight: 1.6, color: '#dfe2f1' }}>
-            Model predicts{' '}
-            <span style={{ fontWeight: 700, color: '#00e38b' }}>bullish trend</span>{' '}
-            due to increasing RSI (64.2) and strong volume breakout over the 20-day moving average.
+            {insightText}
           </p>
         </div>
         <div
@@ -76,9 +78,9 @@ export default function AIInsights() {
           }}
         >
           <p style={{ fontSize: '14px', lineHeight: 1.6, color: '#dfe2f1' }}>
-            Current sentiment is highly positive. Suggesting entry point at{' '}
-            <span style={{ fontWeight: 700, color: '#00e5ff' }}>₹2,990.00</span>{' '}
-            with a trailing stop loss at ₹2,940.00.
+            Current sentiment is generating dynamic patterns. Suggesting entry point around{' '}
+            <span style={{ fontWeight: 700, color: '#00e5ff' }}>{suggestedEntry}</span>{' '}
+            with a trailing stop loss near {stopLoss}.
           </p>
         </div>
 

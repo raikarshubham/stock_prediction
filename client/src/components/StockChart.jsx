@@ -21,7 +21,7 @@ const candleData = [
   { height: 95, green: true },
 ]
 
-export default function StockChart() {
+export default function StockChart({ ticker = 'RELIANCE' }) {
   const [activeFrame, setActiveFrame] = useState('1D')
 
   return (
@@ -39,7 +39,7 @@ export default function StockChart() {
               Market Performance
             </p>
             <p style={{ fontSize: '12px', color: '#bac9cc' }}>
-              Live RELIANCE/INR • Updated 2s ago
+              Live {ticker}/INR • Updated 2s ago
             </p>
           </div>
         </div>

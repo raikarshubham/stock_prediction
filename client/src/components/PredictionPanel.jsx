@@ -1,6 +1,8 @@
 import React from 'react'
 
-export default function PredictionPanel() {
+export default function PredictionPanel({ ticker = 'RELIANCE', predictedPrice = 3142.50, confidence = 94, changePercent = 4.2 }) {
+  const isUp = changePercent >= 0;
+  
   return (
     <div
       className="glass"
@@ -18,7 +20,7 @@ export default function PredictionPanel() {
           className="material-symbols-outlined"
           style={{ color: '#00e5ff', fontSize: '64px', opacity: 0.1 }}
         >
-          rocket_launch
+          {isUp ? 'rocket_launch' : 'trending_down'}
         </span>
       </div>
 
@@ -35,7 +37,7 @@ export default function PredictionPanel() {
               color: '#bac9cc',
             }}
           >
-            Reliance Industries (RELIANCE) Forecast
+            {ticker} Forecast
           </h3>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginTop: '8px', flexWrap: 'wrap' }}>
             <span
@@ -46,7 +48,7 @@ export default function PredictionPanel() {
                 color: 'white',
               }}
             >
-              ₹3,142.50
+              ₹{Number(predictedPrice).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
             <div
               style={{
@@ -56,14 +58,14 @@ export default function PredictionPanel() {
                 borderRadius: '9999px',
                 fontWeight: 700,
                 gap: '4px',
-                color: '#00e38b',
-                background: 'rgba(0,227,139,0.1)',
+                color: isUp ? '#00e38b' : '#ff4d4d',
+                background: isUp ? 'rgba(0,227,139,0.1)' : 'rgba(255,77,77,0.1)',
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                trending_up
+                {isUp ? 'trending_up' : 'trending_down'}
               </span>
-              <span>+4.2%</span>
+              <span>{isUp ? '+' : ''}{changePercent}%</span>
             </div>
           </div>
           <p style={{ fontSize: '14px', marginTop: '12px', color: '#bac9cc' }}>
@@ -99,8 +101,8 @@ export default function PredictionPanel() {
                 stroke="#00e5ff"
                 strokeWidth="8"
                 strokeDasharray="364.4"
-                strokeDashoffset="21.8"
-                style={{ filter: 'drop-shadow(0 0 6px rgba(0,229,255,0.6))' }}
+                strokeDashoffset={364.4 - (364.4 * (confidence / 100))}
+                style={{ filter: 'drop-shadow(0 0 6px rgba(0,229,255,0.6))', transition: 'stroke-dashoffset 1s ease-out' }}
               />
             </svg>
             <span
@@ -112,7 +114,7 @@ export default function PredictionPanel() {
                 color: '#00e5ff',
               }}
             >
-              94%
+              {confidence}%
             </span>
           </div>
         </div>
