@@ -9,16 +9,39 @@ app = Flask(__name__)
 CORS(app)
 
 # Load the model and scaler
-try:
-    model = joblib.load('price_model.pkl')
-    scaler = joblib.load('scaler.pkl')
-    print("Model and scaler loaded successfully.")
-except Exception as e:
-    print(f"Error loading model/scaler: {e}")
+model = None
+scaler = None
+
+def load_model():
+    global model, scaler
+    if model is not None:
+        return True
+    try:
+        import os
+        model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'price_model.pkl')
+        scaler_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scaler.pkl')
+        print(f"Attempting to load model from: {model_path}")
+        model = joblib.load(model_path)
+        scaler = joblib.load(scaler_path)
+        print(f"Model and scaler loaded successfully. Model type: {type(model)}")
+        return True
+    except Exception as e:
+        print(f"Error loading model/scaler: {e}")
+        traceback.print_exc()
+        model = None
+        scaler = None
+        return False
+
+# Try loading at startup
+load_model()
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        # Retry loading model if it failed at startup (e.g. missing xgboost)
+        if model is None:
+            if not load_model():
+                return jsonify({'error': 'ML model failed to load. Check Flask server logs for details (likely missing xgboost: run pip install xgboost).'}), 500
         data = request.json
         ticker = data.get('ticker', 'RELIANCE.NS')
         if not ticker.endswith('.NS') and len(ticker) > 0 and not ticker.endswith('.BO'):
