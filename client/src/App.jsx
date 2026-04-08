@@ -11,6 +11,7 @@ import SignalPage from './pages/SignalPage'
 import UpDownPage from "./pages/UpDownPage";
 import AboutUs from './pages/AboutUs';
 import ProjectDetails from './pages/ProjectDetails';
+import SupportPage from './pages/SupportPage';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -51,6 +52,11 @@ function App() {
         <Route path="/project-details" element={
           <ProtectedRoute>
             <ProjectDetails />
+          </ProtectedRoute>
+        } />
+        <Route path="/support" element={
+          <ProtectedRoute>
+            <SupportPage />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={

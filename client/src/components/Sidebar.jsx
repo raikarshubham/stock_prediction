@@ -85,17 +85,28 @@ export default function Sidebar() {
       <div style={{ marginTop: '32px', paddingTop: '16px', borderTop: '1px solid rgba(59,73,76,0.3)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <a
           href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate('/support');
+          }}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
             padding: '8px 16px',
             borderRadius: '12px',
-            color: 'rgba(223,226,241,0.6)',
+            color: location.pathname === '/support' ? '#00E5FF' : 'rgba(223,226,241,0.6)',
+            background: location.pathname === '/support' ? 'linear-gradient(to right, rgba(0,229,255,0.1), transparent)' : 'transparent',
+            borderRight: location.pathname === '/support' ? '4px solid #00E5FF' : 'none',
+            fontWeight: location.pathname === '/support' ? 700 : 400,
             transition: 'color 0.2s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#dfe2f1')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(223,226,241,0.6)')}
+          onMouseEnter={e => {
+            if (location.pathname !== '/support') e.currentTarget.style.color = '#dfe2f1';
+          }}
+          onMouseLeave={e => {
+            if (location.pathname !== '/support') e.currentTarget.style.color = 'rgba(223,226,241,0.6)';
+          }}
         >
           <span className="material-symbols-outlined">help</span> Support
         </a>
