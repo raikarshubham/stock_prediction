@@ -8,6 +8,7 @@ import SignupPage from './pages/SignupPage'
 import ProfilePage from './pages/ProfilePage'
 import PredictionPage from './pages/PredictionPage'
 import SignalPage from './pages/SignalPage'
+import UpDownPage from "./pages/UpDownPage";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -33,6 +34,9 @@ function App() {
         <Route path="/signals" element={
           <ProtectedRoute>
             <SignalPage />
+        <Route path="/updown" element={
+          <ProtectedRoute>
+            <UpDownPage />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={

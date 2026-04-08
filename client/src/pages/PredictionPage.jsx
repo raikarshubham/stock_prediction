@@ -36,7 +36,7 @@ export default function PredictionPage() {
     setLoading(true);
     setErrorText('');
     setPrediction(null);
-    
+
     try {
       const response = await fetch('http://localhost:5000/api/predict', {
         method: 'POST',
@@ -44,9 +44,9 @@ export default function PredictionPage() {
         body: JSON.stringify({ ticker })
       });
       const data = await response.json();
-      
+
       if (data.error) throw new Error(data.error);
-      
+
       setPrediction({
         currentPrice: data.current_price,
         predictedPrice: data.predicted_price,
@@ -91,7 +91,7 @@ export default function PredictionPage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if(searchValue.trim()) setStock(searchValue.toUpperCase());
+    if (searchValue.trim()) setStock(searchValue.toUpperCase());
   };
 
   const isUp = prediction && (prediction.predictedPrice >= prediction.currentPrice);
@@ -103,7 +103,7 @@ export default function PredictionPage() {
       <div className="app-body">
         <Sidebar />
         <main className="app-main">
-          
+
           {/* Header / Search */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', paddingBottom: '16px', borderBottom: '1px solid var(--outline-variant)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -159,7 +159,7 @@ export default function PredictionPage() {
           {/* Main Dashboard Layout */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="dashboard-grid">
-              
+
               {/* Left Column: Chart */}
               <div className="glass dashboard-col" style={{ flex: 2, padding: '24px', borderRadius: '24px', border: '1px solid var(--outline-variant)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -231,10 +231,10 @@ export default function PredictionPage() {
               </div>
 
               {/* Right Column: Prediction Card */}
-              <div className="glass dashboard-col" style={{ 
-                flex: 1, 
-                padding: '24px', 
-                borderRadius: '24px', 
+              <div className="glass dashboard-col" style={{
+                flex: 1,
+                padding: '24px',
+                borderRadius: '24px',
                 border: '1px solid var(--outline-variant)',
                 position: 'relative',
                 overflow: 'hidden',
@@ -271,7 +271,7 @@ export default function PredictionPage() {
                         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', marginBottom: '4px' }}>Current Price</p>
                         <p style={{ fontSize: '2rem', fontWeight: 300, color: '#fff' }}>₹{prediction.currentPrice}</p>
                       </div>
-                      
+
                       <div style={{ position: 'relative', zIndex: 10, padding: '20px', background: 'var(--bg)', borderRadius: '16px', border: '1px solid var(--outline-variant)' }}>
                         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', marginBottom: '4px' }}>Predicted Next Close</p>
                         <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
@@ -291,12 +291,12 @@ export default function PredictionPage() {
                           <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{prediction.confidence}%</span>
                         </div>
                         <div style={{ width: '100%', background: 'var(--surface-highest)', borderRadius: '9999px', height: '8px' }}>
-                          <div 
-                            style={{ 
-                              background: 'linear-gradient(to right, var(--primary), var(--primary-accent))', 
-                              height: '8px', 
-                              borderRadius: '9999px', 
-                              width: `${prediction.confidence}%` 
+                          <div
+                            style={{
+                              background: 'linear-gradient(to right, var(--primary), var(--primary-accent))',
+                              height: '8px',
+                              borderRadius: '9999px',
+                              width: `${prediction.confidence}%`
                             }}
                           />
                         </div>
@@ -310,7 +310,7 @@ export default function PredictionPage() {
             {/* Bottom Layout */}
             {prediction && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginTop: '16px' }}>
-                
+
                 {/* Key Metrics */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div className="glass" style={{ padding: '20px', borderRadius: '16px', border: '1px solid var(--outline-variant)' }}>
@@ -333,7 +333,7 @@ export default function PredictionPage() {
 
                 {/* AI Insights Panel */}
                 <div className="glass" style={{
-                  padding: '24px', borderRadius: '16px', border: '1px solid var(--outline-variant)', 
+                  padding: '24px', borderRadius: '16px', border: '1px solid var(--outline-variant)',
                   display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', overflow: 'hidden'
                 }}>
                   <div style={{ position: 'absolute', top: 0, right: 0, width: '128px', height: '128px', background: 'var(--primary)', filter: 'blur(80px)', opacity: 0.1, borderRadius: '50%' }} />
@@ -347,7 +347,7 @@ export default function PredictionPage() {
                     "{prediction.aiInsight}"
                   </p>
                 </div>
-                
+
               </div>
             )}
           </div>
