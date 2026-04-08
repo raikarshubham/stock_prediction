@@ -34,6 +34,8 @@ function App() {
         <Route path="/signals" element={
           <ProtectedRoute>
             <SignalPage />
+          </ProtectedRoute>
+        } />
         <Route path="/updown" element={
           <ProtectedRoute>
             <UpDownPage />

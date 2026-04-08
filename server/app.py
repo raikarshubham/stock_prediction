@@ -146,21 +146,29 @@ def predict_updown():
                 'volume': float(row['Volume'])
             })
 
+        def format_volume(vol):
+            try:
+                vol = float(vol)
+                if vol >= 1e7: return f"{vol/1e7:.2f}Cr"
+                if vol >= 1e5: return f"{vol/1e5:.2f}L"
+                return str(int(vol))
+            except:
+                return str(vol)
+
+        rsi_b = float(last.get('RSI', 50.0))
+        sma_10_b = float(last.get('SMA_10', 0.0))
+
         return jsonify({
-            'predicted_price': pred_price,
-            'current_price': current_price,
-            'confidence': 81, # Randomly assigned or modeled confidence
-            'aiInsight': insight,
+            'prediction': "UP" if pred == 1 else "DOWN",
+            'confidence': float(max(proba)) * 100,
+            'current_price': float(last['Close']),
             'historical_data': historical_data,
             'metrics': {
-                'volume': format_volume(last_row['Volume'].iloc[0]),
-                'volatility': f"{last_row['Volatility'].iloc[0]*100:.2f}%",
-                'rsi': f"{rsi_val:.1f}",
-                'sma_10': f"{sma10:.2f}"
+                'volume': format_volume(last['Volume']),
+                'volatility': f"{float(last['Volatility'])*100:.2f}%",
+                'rsi': f"{rsi_b:.1f}",
+                'sma_10': f"{sma_10_b:.2f}"
             }
-            "prediction": "UP" if pred == 1 else "DOWN",
-            "confidence": float(max(proba)),
-            "current_price": float(last['Close'])
         })
 
     except Exception as e:
@@ -297,6 +305,10 @@ def signal_endpoint():
             'historyTable': history_table[:10]  # top 10 most recent
         })
         
+    except Exception as e:
+        print(traceback.format_exc())
+        return jsonify({'error': str(e)}), 400
+
 
 # =========================
 # PRICE PREDICTION (OPTIONAL)
@@ -354,11 +366,25 @@ def predict_price():
         direction = "upward" if predicted_price > current_price else "downward"
         insight = f"AI model predicts a {direction} movement of {abs(change_pct):.2f}% for the next trading session based on technical indicators and recent price action."
 
+        # Generate a lightweight history of the last 30 days for Candlestick Charts
+        history_df = df[['Open', 'High', 'Low', 'Close', 'Volume']].tail(30)
+        historical_data = []
+        for index, row in history_df.iterrows():
+            historical_data.append({
+                'date': index.strftime('%Y-%m-%d') if pd.notnull(index) else str(index),
+                'open': float(row['Open']),
+                'high': float(row['High']),
+                'low': float(row['Low']),
+                'close': float(row['Close']),
+                'volume': float(row['Volume'])
+            })
+
         return jsonify({
             "current_price": current_price,
             "predicted_price": predicted_price,
             "confidence": min(95, max(55, round(100 - abs(change_pct) * 5, 1))),
             "aiInsight": insight,
+            "historical_data": historical_data,
             "metrics": {
                 "volume": f"{volume:,}",
                 "volatility": f"{volatility}%",
