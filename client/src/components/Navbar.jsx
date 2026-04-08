@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 
 export default function Navbar() {
   const [search, setSearch] = useState('')
   const [user, setUser] = useState(null)
   const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,10 +27,11 @@ export default function Navbar() {
     fetchUser()
   }, [])
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    navigate('/')
-  }
+  const navLinks = [
+    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Project Details', path: '/project-details' },
+    { label: 'About Us', path: '/about' }
+  ]
 
   return (
     <nav className="app-navbar">
@@ -60,77 +62,41 @@ export default function Navbar() {
               fontFamily: 'Space Grotesk, sans-serif',
             }}
           >
-            <a href="#" style={{ color: '#00E5FF', borderBottom: '2px solid #00E5FF', paddingBottom: '4px' }}>
-              Dashboard
-            </a>
-            {['Predictions', 'Markets', 'AI Insights'].map((link) => (
-              <a
-                key={link}
-                href="#"
-                style={{ color: '#dfe2f1', transition: 'color 0.3s', padding: '0 8px' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#c3f5ff')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#dfe2f1')}
-              >
-                {link}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path;
+              return (
+                <Link
+                  key={link.label}
+                  to={link.path}
+                  style={{ 
+                    color: isActive ? '#00E5FF' : '#dfe2f1', 
+                    borderBottom: isActive ? '2px solid #00E5FF' : 'none', 
+                    paddingBottom: '4px',
+                    textDecoration: 'none',
+                    transition: 'color 0.3s'
+                  }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#c3f5ff' }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#dfe2f1' }}
+                >
+                  {link.label}
+                </Link>
+              )
+            })}
           </div>
         </div>
 
-        {/* Search + Actions */}
+        {/* Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          {/* Search Bar */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '8px 16px',
-              borderRadius: '9999px',
-              border: '1px solid rgba(59,73,76,0.15)',
-              background: 'rgba(49,53,64,0.4)',
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#bac9cc', fontSize: '20px', marginRight: '8px' }}>
-              search
-            </span>
-            <input
-              style={{
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                fontSize: '14px',
-                width: '192px',
-                color: '#dfe2f1',
-              }}
-              placeholder="Search RELIANCE, BTC, TSLA..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              list="navbar-stocks"
-            />
-            <datalist id="navbar-stocks">
-              <option value="RELIANCE.NS">Reliance Industries</option>
-              <option value="TCS.NS">Tata Consultancy Services</option>
-              <option value="HDFCBANK.NS">HDFC Bank</option>
-              <option value="ICICIBANK.NS">ICICI Bank</option>
-              <option value="INFY.NS">Infosys</option>
-              <option value="SBIN.NS">State Bank of India</option>
-              <option value="BHARTIARTL.NS">Bharti Airtel</option>
-              <option value="ITC.NS">ITC Limited</option>
-              <option value="HINDUNILVR.NS">Hindustan Unilever</option>
-              <option value="LT.NS">Larsen & Toubro</option>
-            </datalist>
-          </div>
-
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
-            style={{ padding: '8px', color: '#dfe2f1', borderRadius: '9999px', transition: 'background 0.2s' }}
+            style={{ padding: '8px', color: '#dfe2f1', borderRadius: '9999px', transition: 'background 0.2s', background: 'transparent', border: 'none', cursor: 'pointer' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'rgba(49,53,64,0.5)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <span className="material-symbols-outlined">notifications</span>
           </button>
 
-{/* Avatar Link */}
+          {/* Avatar Link */}
           <Link
             to="/profile"
             style={{
@@ -151,10 +117,10 @@ export default function Navbar() {
               textDecoration: 'none'
             }}
           >
-            {user ? user.fullName.charAt(0).toUpperCase() : 'U'}
+            {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
           </Link>
+          </div>
         </div>
-      </div>
       </div>
     </nav>
   )

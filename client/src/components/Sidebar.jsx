@@ -6,8 +6,6 @@ const navLinks = [
   { icon: 'query_stats', label: 'Next Day Predictions', path: '/prediction' },
   { icon: 'online_prediction', label: 'Buy/Sell Signals', path: '/signals' },
   { icon: 'show_chart', label: 'Up/Down Predictions', path: '/updown' },
-  { icon: 'account_balance_wallet', label: 'Portfolio', path: '#' },
-  { icon: 'psychology', label: 'AI Insights', path: '#' },
 ]
 
 export default function Sidebar() {

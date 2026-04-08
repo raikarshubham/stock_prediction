@@ -9,6 +9,8 @@ import ProfilePage from './pages/ProfilePage'
 import PredictionPage from './pages/PredictionPage'
 import SignalPage from './pages/SignalPage'
 import UpDownPage from "./pages/UpDownPage";
+import AboutUs from './pages/AboutUs';
+import ProjectDetails from './pages/ProjectDetails';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -39,6 +41,16 @@ function App() {
         <Route path="/updown" element={
           <ProtectedRoute>
             <UpDownPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/about" element={
+          <ProtectedRoute>
+            <AboutUs />
+          </ProtectedRoute>
+        } />
+        <Route path="/project-details" element={
+          <ProtectedRoute>
+            <ProjectDetails />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={
